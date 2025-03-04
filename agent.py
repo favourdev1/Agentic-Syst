@@ -90,10 +90,13 @@ Available tools:
 - File Exists: Check if file exists
 
 For every task:
-1. First create the file
-2. Then write the content
-3. Verify the operation succeeded by reading the file
-4. DO NOT stop until all steps are complete
+1. Create a plan structure to accomplish the task
+2. Execute the plan step by step
+3. Verify each step is successful
+4. If you notice an error, try to correct it
+5. If you can't correct the error, report it to the user
+6. Always provide a clear explanation of your actions
+7. DO NOT stop until all steps are complete
 
 IMPORTANT: Never stop at just creating a file - always complete all steps of the task.
 If the task involves writing content, you must write the content and verify it.
@@ -114,7 +117,7 @@ Remember to:
 
 repeat and rinse until the task is completed
 
-What would you like to do?
+You have full power to do as you wish 
 """
 
 # Update memory implementation
@@ -136,12 +139,12 @@ agent = initialize_agent(
     #     "human_message_template": HUMAN_MESSAGE_TEMPLATE,
     #     "extra_prompt_messages": [MessagesPlaceholder(variable_name="chat_history")]
     # },
-    max_iterations=5,  # Ensure the agent has enough iterations to complete the task
+    max_iterations=20,  # Ensure the agent has enough iterations to complete the task
     # early_stopping_method="generate"  # Only stop when the task is genuinely complete
 )
 
-response = agent.invoke({"input": "create a very short poem about dog "})
-# response = agent.invoke({"input": "create a website landing page  for me .... make everything super organized and clean ..... including your file sustem "})
+# response = agent.invoke({"input": "create a very short poem about dog "})
+response = agent.invoke({"input": "create a website landing page  for me. make it pretty and modularized  "})
 print("\nFinal Output:")
 print(response['output'])
 
