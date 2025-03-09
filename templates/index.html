@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Agent WebSocket Test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <style>
+        #output {
+            white-space: pre-wrap;
+            font-family: monospace;
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin: 10px 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .thought { color: #2c5282; }
+        .action { color: #2b6cb0; }
+        .observation { color: #4a5568; }
+        .error { color: #e53e3e; }
+        .final { color: #2f855a; font-weight: bold; }
+        .token { display: inline; }
+        .thinking { color: #718096; font-style: italic; }
+    </style>
+</head>
+<body>
+    <div>
+        <input type="text" id="input" placeholder="Enter your request..." style="width: 300px;">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+    <div id="output"></div>
+
+    <script>
+        const socket = io('http://localhost:9000');
+        const output = document.getElementById('output');
+        const input = document.getElementById('input');
+        let currentThoughtElement = null;
+
+        socket.on('connect', () => {
+            console.log('Connected to server');
+            appendToOutput('System', 'Connected to server');
+        });
+
+        socket.on('agent_update', (data) => {
+            if (data.type === 'token') {
+                // Handle streaming tokens
+                if (!currentThoughtElement) {
+                    currentThoughtElement = document.createElement('div');
+                    currentThoughtElement.className = 'thinking';
+                    output.appendChild(currentThoughtElement);
+                }
+                currentThoughtElement.textContent += data.data.token;
+            }
+            else if (data.type === 'step') {
+                // Clear the current thought element for new steps
+                currentThoughtElement = null;
+                
+                if (data.data.thought) {
+                    appendToOutput('Thought', data.data.thought);
+                }
+                if (data.data.action && data.data.action !== 'Thinking') {
+                    appendToOutput('Action', `${data.data.action}: ${data.data.action_input}`);
+                }
+                if (data.data.observation) {
+                    appendToOutput('Observation', data.data.observation);
+                }
+            } else if (data.type === 'final') {
+                currentThoughtElement = null;
+                appendToOutput('Final', data.data.output);
+            } else if (data.type === 'error') {
+                currentThoughtElement = null;
+                appendToOutput('Error', data.data.error);
+            }
+            
+            // Always scroll to the latest output
+            output.scrollTop = output.scrollHeight;
+        });
+
+        function appendToOutput(type, content) {
+            const element = document.createElement('div');
+            element.className = type.toLowerCase();
+            element.textContent = `${type}: ${content}`;
+            output.appendChild(element);
+        }
+
+        function sendMessage() {
+            const message = input.value.trim();
+            if (message) {
+                socket.emit('user_input', { input: message });
+                input.value = '';
+                output.innerHTML = ''; // Clear previous output
+                appendToOutput('System', 'Sending request...');
+            }
+        }
+
+        // Allow Enter key to send message
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
