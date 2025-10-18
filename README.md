@@ -7,6 +7,9 @@ A Python-based AI agent system using LangChain and LM Studio  for file managemen
 - File creation and management
 - Content writing and reading
 - Directory operations
+- **Database management and querying (SQLite)**
+- Web search capabilities
+- Terminal command execution
 - Built with LangChain and OpenAI API compatibility
 
 ## Setup
@@ -25,6 +28,25 @@ python agent.py
 
 ## Project Structure
 
-- `agent.py`: Main agent implementation
-- `tools.py`: Custom tools for file operations
+- `app.py`: Flask application with WebSocket support
+- `app/controller/agent.py`: Main agent implementation with streaming
+- `app/tools/`: Custom tools directory
+  - `file_tools.py`: File operations
+  - `web_tool.py`: Web search functionality
+  - `agentic_db_query.py`: Database management tools
+  - `kernel.py`: Tool registration
+- `templates/`: Web UI templates
+- `examples/`: Example scripts demonstrating tool usage
 - `Projects/`: Directory for generated content
+  - `databases/`: SQLite databases storage
+
+## Database Tools
+
+The system includes comprehensive database management capabilities. See [DATABASE_TOOLS.md](DATABASE_TOOLS.md) for detailed documentation.
+
+**Quick Example:**
+```bash
+python examples/database_example.py
+```
+
+This demonstrates creating databases, tables, inserting data, and running queries.
