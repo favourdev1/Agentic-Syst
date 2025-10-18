@@ -11,6 +11,11 @@ from app.tools.file_tools import (
     safe_delete_file
 )
 from app.tools.web_tool import searchOnline
+from app.tools.agentic_db_query import (
+    create_database, list_databases, execute_query,
+    create_table, list_tables, describe_table,
+    insert_data, delete_database
+)
 tools = [
     Tool(
         name="Delete File",
@@ -66,5 +71,45 @@ tools = [
         name="Search Online",
         func=lambda input: searchOnline(input),
         description="Search the web for information on a given query. Usage: query='How to create a website'"
+    ),
+    Tool(
+        name="Create Database",
+        func=lambda input: create_database(**parse_input_string(input)),
+        description="Create a new SQLite database. Usage: db_name=mydatabase"
+    ),
+    Tool(
+        name="List Databases",
+        func=lambda input: list_databases(**parse_input_string(input)),
+        description="List all available databases in the databases directory"
+    ),
+    Tool(
+        name="Execute SQL Query",
+        func=lambda input: execute_query(**parse_input_string(input)),
+        description="Execute a SQL query on a database. Usage: db_name=mydatabase, query='SELECT * FROM users'"
+    ),
+    Tool(
+        name="Create Table",
+        func=lambda input: create_table(**parse_input_string(input)),
+        description="Create a table in a database. Usage: db_name=mydatabase, table_name=users, columns='id INTEGER PRIMARY KEY, name TEXT, email TEXT'"
+    ),
+    Tool(
+        name="List Tables",
+        func=lambda input: list_tables(**parse_input_string(input)),
+        description="List all tables in a database. Usage: db_name=mydatabase"
+    ),
+    Tool(
+        name="Describe Table",
+        func=lambda input: describe_table(**parse_input_string(input)),
+        description="Describe the structure of a table. Usage: db_name=mydatabase, table_name=users"
+    ),
+    Tool(
+        name="Insert Data",
+        func=lambda input: insert_data(**parse_input_string(input)),
+        description="Insert data into a table. Usage: db_name=mydatabase, table_name=users, columns='name, email', values=\"'John Doe', 'john@example.com'\""
+    ),
+    Tool(
+        name="Delete Database",
+        func=lambda input: delete_database(**parse_input_string(input)),
+        description="Delete a database file. Usage: db_name=mydatabase"
     )
 ]
